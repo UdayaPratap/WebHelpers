@@ -6,7 +6,7 @@ import numpy as np
 import time
 import spacy
 from nltk.tokenize import sent_tokenize, word_tokenize
-import en_core_web_sm
+# import en_core_web_sm
 
 # Function to extract Product title
 def get_title(soup):
