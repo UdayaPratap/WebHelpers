@@ -8,6 +8,9 @@ import spacy
 from nltk.tokenize import sent_tokenize, word_tokenize
 import nltk
 nltk.download('punkt')
+import spacy
+nlp = spacy.load('en_core_web_md')
+
 # import en_core_web_sm
 
 # Function to extract Product title
