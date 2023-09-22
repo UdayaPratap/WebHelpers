@@ -145,7 +145,7 @@ def extractive_summarize(text, num_sentences=2):
 def chatbot(scraped_data, summarized_description, summarized_reviews):
     st.subheader("Chat with SHopy - Your Shopping Assistant")
 
-    nlp = spacy.load('en_core_web_md')  # make sure you have this model downloaded
+    # nlp = spacy.load('en_core_web_md')  # make sure you have this model downloaded
     queries = {
         'title': ['name', 'title', 'brand', 'product name', 'what is it called'],
         'price': ['price', 'cost', 'how much', 'value', 'worth', 'expense'],
@@ -161,7 +161,7 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
         if statement.lower() == 'exit':
             return
 
-        statement_doc = nlp(statement)
+        # statement_doc = nlp(statement)
         found_match = False
 
         # Check if the user's statement contains any of the keywords
