@@ -5,3 +5,4 @@ pandas
 numpy
 spacy
 nltk
+en-core-web-md
