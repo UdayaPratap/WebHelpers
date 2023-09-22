@@ -6,6 +6,8 @@ import numpy as np
 import time
 import spacy
 from nltk.tokenize import sent_tokenize, word_tokenize
+import nltk
+nltk.download('punkt')
 # import en_core_web_sm
 
 # Function to extract Product title
