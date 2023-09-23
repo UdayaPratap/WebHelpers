@@ -209,6 +209,7 @@ def extractive_summarize(text, num_sentences=2):
 
 #         if not found_match:
 #             st.write("I'm sorry, I didn't understand your question. Could you please rephrase it?")
+# Function to chat with the bot
 def chatbot(scraped_data, summarized_description, summarized_reviews):
     st.subheader("Chat with SHopy - Your Shopping Assistant")
 
@@ -223,7 +224,7 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
     }
 
     while True:
-        statement = st.text_input("Enter your question about the product or type 'exit' to end:")
+        statement = st.text_input("Enter your question about the product or type 'exit' to end:", key="chat_input")
         if statement.lower() == 'exit':
             return
 
@@ -234,16 +235,24 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
                 if synonym in statement.lower():
                     if key == 'description':
                         if 'short' in statement.lower() or 'brief' in statement.lower():
-                            st.write(f"Short Description: {summarized_description}")
+                            description = summarized_description if summarized_description else "No description available."
+                            st.write(f"Short Description: {description}")
                         else:
-                            st.write(f"Full Description: {scraped_data['description']}")
+                            description = scraped_data.get('description', "No description available.")
+                            st.write(f"Full Description: {description}")
                     elif key == 'reviews':
                         if 'summarized' in statement.lower():
-                            st.write(f"Summarized Reviews: {summarized_reviews}")
+                            reviews = summarized_reviews if summarized_reviews else "No summarized reviews available."
+                            st.write(f"Summarized Reviews: {reviews}")
                         else:
-                            st.write(f"Full Reviews:\n{scraped_data['reviews']}")
+                            reviews = "\n".join(scraped_data.get('reviews', []))
+                            if reviews:
+                                st.write(f"Full Reviews:\n{reviews}")
+                            else:
+                                st.write("No reviews available.")
                     else:
-                        st.write(f"The {key} of the product is: {str(scraped_data[key])}")
+                        value = scraped_data.get(key, "Not available.")
+                        st.write(f"The {key} of the product is: {value}")
                     found_match = True
                     break
 
