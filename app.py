@@ -146,7 +146,6 @@ def extractive_summarize(text, num_sentences=2):
     return summary
 
 # Function to chat with the bot
-# Function to chat with the bot
 def chatbot(scraped_data, summarized_description, summarized_reviews):
     st.subheader("Chat with SHopy - Your Shopping Assistant")
 
@@ -160,49 +159,45 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
         'all_info': ['display all data', 'display all info', 'display all information', 'give all info', 'show everything', 'show all details']
     }
 
-    widget_key_counter = 0  # Initialize a counter for widget keys
+    user_input = st.text_input("Enter your question about the product or type 'exit' to end:")
 
-    while True:
-        widget_key = f"chat_input_{widget_key_counter}"
-        statement = st.text_input("Enter your question about the product or type 'exit' to end:", key=widget_key)
-        if statement.lower() == 'exit':
-            return
+    if user_input.lower() == 'exit':
+        return
 
-        found_match = False
+    found_match = False
 
-        for key, synonyms in queries.items():
-            for synonym in synonyms:
-                if synonym in statement.lower():
-                    if key == 'description':
-                        if 'short' in statement.lower() or 'brief' in statement.lower():
-                            description = summarized_description if summarized_description else "No description available."
-                            st.write(f"Short Description: {description}")
-                        else:
-                            description = scraped_data.get('description', "No description available.")
-                            st.write(f"Full Description: {description}")
-                    elif key == 'reviews':
-                        if 'summarized' in statement.lower():
-                            reviews = summarized_reviews if summarized_reviews else "No summarized reviews available."
-                            st.write(f"Summarized Reviews: {reviews}")
-                        else:
-                            reviews = "\n".join(scraped_data.get('reviews', []))
-                            if reviews:
-                                st.write(f"Full Reviews:\n{reviews}")
-                            else:
-                                st.write("No reviews available.")
+    for key, synonyms in queries.items():
+        for synonym in synonyms:
+            if synonym in user_input.lower():
+                if key == 'description':
+                    if 'short' in user_input.lower() or 'brief' in user_input.lower():
+                        description = summarized_description if summarized_description else "No description available."
+                        st.write(f"Short Description: {description}")
                     else:
-                        value = scraped_data.get(key, "Not available.")
-                        st.write(f"The {key} of the product is: {value}")
-                    found_match = True
-                    break
-
-            if found_match:
+                        description = scraped_data.get('description', "No description available.")
+                        st.write(f"Full Description: {description}")
+                elif key == 'reviews':
+                    if 'summarized' in user_input.lower():
+                        reviews = summarized_reviews if summarized_reviews else "No summarized reviews available."
+                        st.write(f"Summarized Reviews: {reviews}")
+                    else:
+                        reviews = "\n".join(scraped_data.get('reviews', []))
+                        if reviews:
+                            st.write(f"Full Reviews:\n{reviews}")
+                        else:
+                            st.write("No reviews available.")
+                else:
+                    value = scraped_data.get(key, "Not available.")
+                    st.write(f"The {key} of the product is: {value}")
+                found_match = True
                 break
 
-        if not found_match:
-            st.write("I'm sorry, I didn't understand your question. Could you please rephrase it?")
-        
-        widget_key_counter += 1  # Increment the widget key counter
+        if found_match:
+            break
+
+    if not found_match:
+        st.write("I'm sorry, I didn't understand your question. Could you please rephrase it?")
+
 
 # Streamlit app
 def main():
