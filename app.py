@@ -14,13 +14,14 @@ import spacy
 # import en_core_web_sm
 
 # Function to extract Product title
+# Function to extract Product title
 def get_title(soup):
     try:
         title = soup.find("span", attrs={"id": 'productTitle'})
         title_value = title.text
         title_string = title_value.strip()
     except Exception:
-        title_string = ""
+        title_string = "Title not available"  # Assign a default value
     return title_string
 
 # Function to extract Product Prices
@@ -31,7 +32,7 @@ def get_price(soup):
         price_currency = soup.find("span", class_='a-price-symbol').text.strip()
         price = f"{price_currency}{price_whole}.{price_fractional}"
     except Exception:
-        price = ""
+        price = "Price not available"  # Assign a default value
     return price
 
 # Function to extract Product Rating
@@ -42,7 +43,7 @@ def get_rating(soup):
         try:
             rating = soup.find("span", attrs={'class': 'a-icon-alt'}).string.strip()
         except:
-            rating = ""
+            rating = "Rating not available"  # Assign a default value
     return rating
 
 # Function to extract the number of reviews
@@ -50,7 +51,7 @@ def get_review_count(soup):
     try:
         review_count = soup.find("span", attrs={'id': 'acrCustomerReviewText'}).string.split()
     except Exception:
-        review_count = ""
+        review_count = "Review count not available"  # Assign a default value
     return review_count
 
 # Function to extract the Product description
@@ -61,7 +62,7 @@ def get_product_description(soup):
             description_text = " ".join([item.text.strip() for item in description.find_all("span", class_="a-list-item")])
             return description_text
     except Exception:
-        return ""
+        return "Description not available"  # Assign a default value
 
 # Function to extract Availability Status
 def get_availability(soup):
@@ -69,7 +70,7 @@ def get_availability(soup):
         available = soup.find("div", attrs={'id': 'availability'})
         available = available.find("span").string.strip()
     except Exception:
-        available = "Not Available"
+        available = "Availability not available"  # Assign a default value
     return available
 
 # Function to extract product reviews
@@ -80,6 +81,9 @@ def get_reviews(soup):
     for element in review_elements[:10]:  # Extract the first 10 reviews
         review_text = element.find("span", class_="a-size-base review-text").text.strip()
         reviews.append(review_text)
+    
+    if not reviews:
+        reviews = ["No reviews available"]  # Assign a default value if no reviews are found
     
     return reviews
 
