@@ -52,16 +52,17 @@ def get_review_count(soup):
 
 # Function to extract the Product description
 def get_product_description(soup):
-    try:
-        description = soup.find("ul", class_="a-unordered-list a-vertical a-spacing-mini")
-        if description:
-            description_text = " ".join([item.text.strip() for item in description.find_all("span", class_="a-list-item")])
-            if description_text:
-                return description_text
-            else:
-                return "Description not available"
-    except Exception:
-        return "Description not available"  # Assign a default value
+    return "Description not available"
+    # try:
+    #     description = soup.find("ul", class_="a-unordered-list a-vertical a-spacing-mini")
+    #     if description:
+    #         description_text = " ".join([item.text.strip() for item in description.find_all("span", class_="a-list-item")])
+    #         if description_text:
+    #             return description_text
+    #         else:
+    #             return "Description not available"
+    # except Exception:
+    #     return "Description not available"  # Assign a default value
 
 # Function to extract Availability Status
 def get_availability(soup):
