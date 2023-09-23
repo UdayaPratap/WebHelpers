@@ -145,6 +145,7 @@ def extractive_summarize(text, num_sentences=2):
     
     return summary
 
+# Function to chat with the bot
 def chatbot(scraped_data, summarized_description, summarized_reviews):
     st.subheader("Chat with SHopy - Your Shopping Assistant")
 
@@ -158,8 +159,11 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
         'all_info': ['display all data', 'display all info', 'display all information', 'give all info', 'show everything', 'show all details']
     }
 
+    widget_key_counter = 0  # Initialize a counter for widget keys
+
     while True:
-        statement = st.text_input("Enter your question about the product or type 'exit' to end:", key="chat_input")
+        widget_key = f"chat_input_{widget_key_counter}"
+        statement = st.text_input("Enter your question about the product or type 'exit' to end:", key=widget_key)
         if statement.lower() == 'exit':
             return
 
@@ -196,6 +200,8 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
 
         if not found_match:
             st.write("I'm sorry, I didn't understand your question. Could you please rephrase it?")
+        
+        widget_key_counter += 1  # Increment the widget key counter
 
 # Streamlit app
 def main():
