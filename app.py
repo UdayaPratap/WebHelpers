@@ -146,6 +146,7 @@ def extractive_summarize(text, num_sentences=2):
     return summary
 
 # Function to chat with the bot
+# Function to chat with the bot
 def chatbot(scraped_data, summarized_description, summarized_reviews):
     st.subheader("Chat with SHopy - Your Shopping Assistant")
 
