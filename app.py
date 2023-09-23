@@ -56,7 +56,10 @@ def get_product_description(soup):
         description = soup.find("ul", class_="a-unordered-list a-vertical a-spacing-mini")
         if description:
             description_text = " ".join([item.text.strip() for item in description.find_all("span", class_="a-list-item")])
-            return description_text
+            if description_text:
+                return description_text
+            else:
+                return "Description not available"
     except Exception:
         return "Description not available"  # Assign a default value
 
