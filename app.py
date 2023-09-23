@@ -147,6 +147,8 @@ def extractive_summarize(text, num_sentences=2):
 
 # Function to chat with the bot
 
+import streamlit as st
+
 def chatbot(scraped_data, summarized_description, summarized_reviews):
     st.subheader("Chat with SHopy - Your Shopping Assistant")
 
@@ -161,7 +163,8 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
     }
 
     # Initialize conversation history
-    conversation = []
+    if "conversation" not in st.session_state:
+        st.session_state.conversation = []
 
     # Counter for generating unique keys
     widget_counter = 0
@@ -170,6 +173,7 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
         user_input = st.text_input(f"Enter your question about the product or type 'exit' to end:", key=f"chat_input_{widget_counter}")
         
         if user_input.lower() == 'exit':
+            st.session_state.conversation = conversation  # Save the conversation history in session state
             return
 
         found_match = False
@@ -207,6 +211,7 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
             response = "I'm sorry, I didn't understand your question. Could you please rephrase it?"
 
         # Append user input and response to conversation history
+        conversation = st.session_state.conversation
         conversation.append(f"You: {user_input}")
         conversation.append(f"Bot: {response}")
 
