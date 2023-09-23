@@ -149,6 +149,8 @@ def extractive_summarize(text, num_sentences=2):
 
 import streamlit as st
 
+import streamlit as st
+
 def chatbot(scraped_data, summarized_description, summarized_reviews):
     st.subheader("Chat with SHopy - Your Shopping Assistant")
 
@@ -168,6 +170,9 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
 
     # Counter for generating unique keys
     widget_counter = 0
+
+    # Create the conversation history text area only once
+    conversation_history = st.text_area("Conversation History", value="", key="conversation_history")
 
     while True:
         user_input = st.text_input(f"Enter your question about the product or type 'exit' to end:", key=f"chat_input_{widget_counter}")
@@ -215,14 +220,14 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
         conversation.append(f"You: {user_input}")
         conversation.append(f"Bot: {response}")
 
+        # Update the conversation history text area with the updated conversation
+        conversation_history.value = "\n".join(conversation)
+        
         # Display the bot's response
         st.write(f"Bot: {response}")
         
         # Increment the widget counter to generate a new key for the next input field
         widget_counter += 1
-
-        # Display conversation history
-        st.text_area("Conversation History", value="\n".join(conversation), key="conversation_history")
 
 # Streamlit app
 def main():
