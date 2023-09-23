@@ -9,11 +9,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 import nltk
 nltk.download('punkt')
 import spacy
-# nlp = spacy.load('en_core_web_md')
 
-# import en_core_web_sm
-
-# Function to extract Product title
 # Function to extract Product title
 def get_title(soup):
     try:
@@ -145,71 +141,6 @@ def extractive_summarize(text, num_sentences=2):
     
     return summary
 
-# Function to chat with the bot
-# def chatbot(scraped_data, summarized_description, summarized_reviews):
-#     st.subheader("Chat with SHopy - Your Shopping Assistant")
-
-#     # nlp = spacy.load('en_core_web_md')  # make sure you have this model downloaded
-#     queries = {
-#         'title': ['name', 'title', 'brand', 'product name', 'what is it called'],
-#         'price': ['price', 'cost', 'how much', 'value', 'worth', 'expense'],
-#         'description': ['short description', 'brief description', 'describe', 'details', 'detail', 'specs', 'specifications', 'features'],
-#         'rating': ['rating', 'ratings', 'rated', 'stars', 'feedback', 'reviews'],
-#         'reviews_count': ['reviews count', 'no of reviews', 'number of reviews', 'how many reviews'],
-#         'availability': ['deliver', 'delivery', 'available', 'availability', 'in stock', 'can I buy it'],
-#         'all_info': ['display all data', 'display all info', 'display all information', 'give all info', 'show everything', 'show all details']
-#     }
-
-#     while True:
-#         statement = st.text_input("Enter your question about the product or type 'exit' to end:")
-#         if statement.lower() == 'exit':
-#             return
-
-#         # statement_doc = nlp(statement)
-#         found_match = False
-
-#         # Check if the user's statement contains any of the keywords
-#         for key, synonyms in queries.items():
-#             for synonym in synonyms:
-#                 if synonym in statement.lower():
-#                     if key == 'description':
-#                         # Check if the user asks for a short or full description
-#                         if 'short' in statement.lower() or 'brief' in statement.lower():
-#                             st.write(f"Short Description: {summarized_description}")
-#                         else:
-#                             st.write(f"Full Description: {scraped_data['description']}")
-#                     elif key == 'reviews':
-#                         # Check if the user asks for summarized or full reviews
-#                         if 'summarized' in statement.lower():
-#                             st.write(f"Summarized Reviews: {summarized_reviews}")
-#                         else:
-#                             st.write(f"Full Reviews:\n{scraped_data['reviews']}")
-#                     else:
-#                         st.write(f"The {key} of the product is: {str(scraped_data[key])}")
-#                     found_match = True
-#                     break
-
-#             if found_match:
-#                 break
-
-#         # If no keyword matches, check for specific details in the product description
-#         details = str(scraped_data.get('description', ''))
-
-#         for sentence in details.split('|'):  # split on '|' instead of '.'
-#             sentence = sentence.strip()  # remove leading and trailing whitespace and punctuation
-#             for token in statement_doc:
-#                 # Ignore stop words and punctuation
-#                 if not token.is_stop and not token.is_punct and token.text.lower() in sentence.lower():
-#                     st.write(f"I found this information about your query:\n {sentence}")
-#                     found_match = True
-#                     break
-
-#             if found_match:
-#                 break
-
-#         if not found_match:
-#             st.write("I'm sorry, I didn't understand your question. Could you please rephrase it?")
-# Function to chat with the bot
 def chatbot(scraped_data, summarized_description, summarized_reviews):
     st.subheader("Chat with SHopy - Your Shopping Assistant")
 
