@@ -203,7 +203,7 @@ st.title("SHopy - Your Shopping Assistant")
 # Input for webpage URL
 webpage_url = st.text_input("Enter the URL of the webpage:")
 
-if st.button("Scrape Product Data"):
+if st.button("Scrape Product Data", key="1"):
     scraped_data = scrape_single_url(webpage_url)
 
     if scraped_data:
@@ -252,7 +252,7 @@ if st.button("Scrape Product Data"):
         user_input = st.text_input("You:")
         
         # Submit button
-        if st.button("Send"):
+        if st.button("Send", key="2"):
             user_input = user_input.lower()
             conversation.append(f"You: {user_input}")
             found_match = False
@@ -263,13 +263,12 @@ if st.button("Scrape Product Data"):
                             response=f"Here are all the details of the product:\n{chatbot_responses}"
                             found_match=True
                         else:
-                            response=f"The {key} of the product is: {str(chatbot_responses[key])}"
+                            response=f"The {key} of the product is: {str(scraped_data[key])}"
                             found_match=True
                         
             if not found_match:
                 response = "I'm sorry, I didn't understand your question. Could you please rephrase it?"
             conversation.append(response)
-    
         # Display conversation history
         st.text_area("Conversation History", value="\n".join(conversation), key="conversation_history")
 
