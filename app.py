@@ -291,7 +291,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 import nltk
 
 nltk.download('punkt')
-nlp = spacy.load("en_core_web_sm")
+
 
 # Function to scrape a single URL and store data in a dictionary
 def scrape_single_url(url):
