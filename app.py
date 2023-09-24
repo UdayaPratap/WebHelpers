@@ -291,7 +291,6 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 import nltk
 
 nltk.download('punkt')
-nlp = spacy.load("en_core_web_sm")
 
 
 # Function for extractive summarization
