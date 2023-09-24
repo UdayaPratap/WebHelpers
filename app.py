@@ -283,124 +283,12 @@
 import streamlit as st
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
-import numpy as np
-import time
-import spacy
 from nltk.tokenize import sent_tokenize, word_tokenize
 import nltk
+import time
+import spacy
 
 nltk.download('punkt')
-
-
-# Function to scrape a single URL and store data in a dictionary
-def scrape_single_url(url):
-    try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        }
-        
-        # Create a session to manage cookies and maintain state
-        session = requests.Session()
-        time.sleep(2)
-        # Use the session for making requests
-        response = session.get(url, headers=headers)
-
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            try:
-                title = soup.find("span", attrs={"id": 'productTitle'})
-                title_value = title.text
-                title_string = title_value.strip()
-            except Exception:
-                title_string = "Title not available"  # Assign a default value
-            
-            try:
-                price_whole = soup.find("span", class_='a-price-whole').text.strip()
-                price_fractional = soup.find("span", class_='a-price-fraction').text.strip()
-                price_currency = soup.find("span", class_='a-price-symbol').text.strip()
-                price = f"{price_currency}{price_whole}.{price_fractional}"
-            except Exception:
-                price = "Price not available"  # Assign a default value
-            
-            try:
-                rating = soup.find("i", attrs={'class': 'a-icon a-icon-star a-star-4-5'}).string.strip()
-            except Exception:
-                try:
-                    rating = soup.find("span", attrs={'class': 'a-icon-alt'}).string.strip()
-                except:
-                    rating = "Rating not available"  # Assign a default value
-            
-            try:
-                review_count = soup.find("span", attrs={'id': 'acrCustomerReviewText'}).string.split()
-            except Exception:
-                review_count = "Review count not available"  # Assign a default value
-            
-            return {
-                'title': title_string,
-                'price': price,
-                'rating': rating,
-                'reviews': get_reviews(soup),
-                'availability': get_availability(soup),
-                'description': "Description not available",
-            }
-        else:
-            st.error(f"Failed to retrieve the Amazon page: {url}")
-            return None
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        return None
-
-# Function to extract product reviews
-def get_reviews(soup):
-    reviews = []
-    review_elements = soup.find_all("div", class_="a-row a-spacing-small review-data")
-    
-    for element in review_elements[:10]:  # Extract the first 10 reviews
-        review_text = element.find("span", class_="a-size-base review-text").text.strip()
-        reviews.append(review_text)
-    
-    if not reviews:
-        reviews = ["No reviews available"]  # Assign a default value if no reviews are found
-    
-    return reviews
-
-# Function to extract Availability Status
-def get_availability(soup):
-    try:
-        available = soup.find("div", attrs={'id': 'availability'})
-        available = available.find("span").string.strip()
-    except Exception:
-        available = "Availability not available"  # Assign a default value
-    return available
-
-# Function for extractive summarization
-def extractive_summarize(text, num_sentences=2):
-    sentences = sent_tokenize(text)
-    word_frequencies = {}
-    
-    for sentence in sentences:
-        words = word_tokenize(sentence)
-        for word in words:
-            if word not in word_frequencies:
-                word_frequencies[word] = 1
-            else:
-                word_frequencies[word] += 1
-    
-    sentence_scores = {}
-    for sentence in sentences:
-        for word in word_tokenize(sentence):
-            if word in word_frequencies:
-                if sentence not in sentence_scores:
-                    sentence_scores[sentence] = word_frequencies[word]
-                else:
-                    sentence_scores[sentence] += word_frequencies[word]
-    
-    summary_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
-    summary = ' '.join(summary_sentences)
-    
-    return summary
 
 # Streamlit app
 st.title("SHopy - Your Shopping Assistant")
@@ -422,14 +310,14 @@ if st.button("Scrape Product Data"):
 
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
-            
+
             try:
                 title = soup.find("span", attrs={"id": 'productTitle'})
                 title_value = title.text
                 title_string = title_value.strip()
             except Exception:
                 title_string = "Title not available"  # Assign a default value
-            
+
             try:
                 price_whole = soup.find("span", class_='a-price-whole').text.strip()
                 price_fractional = soup.find("span", class_='a-price-fraction').text.strip()
@@ -437,7 +325,7 @@ if st.button("Scrape Product Data"):
                 price = f"{price_currency}{price_whole}.{price_fractional}"
             except Exception:
                 price = "Price not available"  # Assign a default value
-            
+
             try:
                 rating = soup.find("i", attrs={'class': 'a-icon a-icon-star a-star-4-5'}).string.strip()
             except Exception:
@@ -445,18 +333,30 @@ if st.button("Scrape Product Data"):
                     rating = soup.find("span", attrs={'class': 'a-icon-alt'}).string.strip()
                 except:
                     rating = "Rating not available"  # Assign a default value
-            
+
             try:
-                review_count = soup.find("span", attrs={'id': 'acrCustomerReviewText'}).string.split()
+                review_elements = soup.find_all("div", class_="a-row a-spacing-small review-data")
+                reviews = []
+                for element in review_elements[:10]:  # Extract the first 10 reviews
+                    review_text = element.find("span", class_="a-size-base review-text").text.strip()
+                    reviews.append(review_text)
+                if not reviews:
+                    reviews = ["No reviews available"]  # Assign a default value if no reviews are found
             except Exception:
-                review_count = "Review count not available"  # Assign a default value
-            
+                reviews = ["Reviews not available"]
+
+            try:
+                available = soup.find("div", attrs={'id': 'availability'})
+                available = available.find("span").string.strip()
+            except Exception:
+                available = "Availability not available"  # Assign a default value
+
             scraped_data = {
                 'title': title_string,
                 'price': price,
                 'rating': rating,
-                'reviews': get_reviews(soup),
-                'availability': get_availability(soup),
+                'reviews': reviews,
+                'availability': available,
                 'description': "Description not available",
             }
 
@@ -469,8 +369,51 @@ if st.button("Scrape Product Data"):
             reviews = "\n".join(scraped_data['reviews'])  # Join multiple reviews into a single string
 
             # Apply extractive summarization to the description and reviews
-            summarized_description = extractive_summarize(description)
-            summarized_reviews = extractive_summarize(reviews, num_sentences=3)  # Adjust the number of sentences as needed
+            sentences = sent_tokenize(description)
+            word_frequencies = {}
+
+            for sentence in sentences:
+                words = word_tokenize(sentence)
+                for word in words:
+                    if word not in word_frequencies:
+                        word_frequencies[word] = 1
+                    else:
+                        word_frequencies[word] += 1
+
+            sentence_scores = {}
+            for sentence in sentences:
+                for word in word_tokenize(sentence):
+                    if word in word_frequencies:
+                        if sentence not in sentence_scores:
+                            sentence_scores[sentence] = word_frequencies[word]
+                        else:
+                            sentence_scores[sentence] += word_frequencies[word]
+
+            summary_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:2]
+            summarized_description = ' '.join(summary_sentences)
+
+            sentences = sent_tokenize(reviews)
+            word_frequencies = {}
+
+            for sentence in sentences:
+                words = word_tokenize(sentence)
+                for word in words:
+                    if word not in word_frequencies:
+                        word_frequencies[word] = 1
+                    else:
+                        word_frequencies[word] += 1
+
+            sentence_scores = {}
+            for sentence in sentences:
+                for word in word_tokenize(sentence):
+                    if word in word_frequencies:
+                        if sentence not in sentence_scores:
+                            sentence_scores[sentence] = word_frequencies[word]
+                        else:
+                            sentence_scores[sentence] += word_frequencies[word]
+
+            summary_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:3]
+            summarized_reviews = ' '.join(summary_sentences)
 
             st.header("Summarized Description:")
             st.write(summarized_description)
@@ -531,7 +474,6 @@ if st.button("Send"):
 
 # Display conversation history
 st.text_area("Conversation History", value="\n".join(conversation), key="conversation_history")
-
 
 
 
