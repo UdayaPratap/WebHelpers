@@ -200,11 +200,6 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
                         value = scraped_data.get(key, "Not available.")
                         response = f"The {key} of the product is: {value}"
                     found_match = True
-                    break
-
-            if found_match:
-                break
-
         if not found_match:
             response = "I'm sorry, I didn't understand your question. Could you please rephrase it?"
         conversation.append(response)
