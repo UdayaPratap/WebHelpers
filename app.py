@@ -291,7 +291,89 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 import nltk
 
 nltk.download('punkt')
+nlp = spacy.load("en_core_web_sm")
 
+# Function to scrape a single URL and store data in a dictionary
+def scrape_single_url(url):
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        }
+        
+        # Create a session to manage cookies and maintain state
+        session = requests.Session()
+        time.sleep(2)
+        # Use the session for making requests
+        response = session.get(url, headers=headers)
+
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            try:
+                title = soup.find("span", attrs={"id": 'productTitle'})
+                title_value = title.text
+                title_string = title_value.strip()
+            except Exception:
+                title_string = "Title not available"  # Assign a default value
+            
+            try:
+                price_whole = soup.find("span", class_='a-price-whole').text.strip()
+                price_fractional = soup.find("span", class_='a-price-fraction').text.strip()
+                price_currency = soup.find("span", class_='a-price-symbol').text.strip()
+                price = f"{price_currency}{price_whole}.{price_fractional}"
+            except Exception:
+                price = "Price not available"  # Assign a default value
+            
+            try:
+                rating = soup.find("i", attrs={'class': 'a-icon a-icon-star a-star-4-5'}).string.strip()
+            except Exception:
+                try:
+                    rating = soup.find("span", attrs={'class': 'a-icon-alt'}).string.strip()
+                except:
+                    rating = "Rating not available"  # Assign a default value
+            
+            try:
+                review_count = soup.find("span", attrs={'id': 'acrCustomerReviewText'}).string.split()
+            except Exception:
+                review_count = "Review count not available"  # Assign a default value
+            
+            return {
+                'title': title_string,
+                'price': price,
+                'rating': rating,
+                'reviews': get_reviews(soup),
+                'availability': get_availability(soup),
+                'description': "Description not available",
+            }
+        else:
+            st.error(f"Failed to retrieve the Amazon page: {url}")
+            return None
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        return None
+
+# Function to extract product reviews
+def get_reviews(soup):
+    reviews = []
+    review_elements = soup.find_all("div", class_="a-row a-spacing-small review-data")
+    
+    for element in review_elements[:10]:  # Extract the first 10 reviews
+        review_text = element.find("span", class_="a-size-base review-text").text.strip()
+        reviews.append(review_text)
+    
+    if not reviews:
+        reviews = ["No reviews available"]  # Assign a default value if no reviews are found
+    
+    return reviews
+
+# Function to extract Availability Status
+def get_availability(soup):
+    try:
+        available = soup.find("div", attrs={'id': 'availability'})
+        available = available.find("span").string.strip()
+    except Exception:
+        available = "Availability not available"  # Assign a default value
+    return available
 
 # Function for extractive summarization
 def extractive_summarize(text, num_sentences=2):
@@ -449,6 +531,7 @@ if st.button("Send"):
 
 # Display conversation history
 st.text_area("Conversation History", value="\n".join(conversation), key="conversation_history")
+
 
 
 
