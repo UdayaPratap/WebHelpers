@@ -145,18 +145,10 @@ def extractive_summarize(text, num_sentences=2):
     
     return summary
 
-# Function to chat with the bot
-
-import streamlit as st
-
-import streamlit as st
-
-import streamlit as st
-
 def chatbot(scraped_data, summarized_description, summarized_reviews):
     st.subheader("Chat with SHopy - Your Shopping Assistant")
 
-    queries = {
+    chatbot_responses = {
         'title': ['name', 'title', 'brand', 'product name', 'what is it called'],
         'price': ['price', 'cost', 'how much', 'value', 'worth', 'expense'],
         'description': ['short description', 'brief description', 'describe', 'details', 'detail', 'specs', 'specifications', 'features'],
@@ -166,26 +158,25 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
         'all_info': ['display all data', 'display all info', 'display all information', 'give all info', 'show everything', 'show all details']
     }
 
-    # Initialize conversation history
-    if "conversation" not in st.session_state:
-        st.session_state.conversation = []
-
-    # Counter for generating unique keys
-    widget_counter = 0
-
-    # Create an empty element for conversation history
-    conversation_history = st.empty()
-
-    while True:
-        user_input = st.text_input(f"Enter your question about the product or type 'exit' to end:", key=f"chat_input_{widget_counter}")
-        
-        if user_input.lower() == 'exit':
-            st.session_state.conversation = conversation  # Save the conversation history in session state
-            return
-
+    # Function to initialize the conversation state
+    def init_conversation():
+        return []
+    # Function to get the current conversation
+    def get_conversation():
+        if "conversation" not in st.session_state:
+            st.session_state.conversation = init_conversation()
+        return st.session_state.conversation
+    # Initialize conversation
+    conversation = get_conversation()
+    # User input
+    user_input = st.text_input("You:")
+    
+    # Submit button
+    if st.button("Send"):
+        user_input = user_input.lower()
+        conversation.append(f"You: {user_input}")
         found_match = False
-
-        for key, synonyms in queries.items():
+        for key, synonyms in chatbot_responses.items():
             for synonym in synonyms:
                 if synonym in user_input.lower():
                     if key == 'description':
@@ -216,21 +207,10 @@ def chatbot(scraped_data, summarized_description, summarized_reviews):
 
         if not found_match:
             response = "I'm sorry, I didn't understand your question. Could you please rephrase it?"
+        conversation.append(response)
 
-        # Append user input and response to conversation history
-        conversation = st.session_state.conversation
-        conversation.append(f"You: {user_input}")
-        conversation.append(f"Bot: {response}")
-
-        # Update the conversation history using the empty element
-        conversation_history.text("\n".join(conversation))
-        
-        # Display the bot's response
-        st.write(f"Bot: {response}")
-        
-        # Increment the widget counter to generate a new key for the next input field
-        widget_counter += 1
-
+    # Display conversation history
+    st.text_area("Conversation History", value="\n".join(conversation), key="conversation_history")
 
 # Streamlit app
 def main():
