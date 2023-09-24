@@ -202,7 +202,16 @@ st.title("SHopy - Your Shopping Assistant")
 
 # Input for webpage URL
 webpage_url = st.text_input("Enter the URL of the webpage:")
-
+{
+"title":"Title not available"
+"price":"Price not available"
+"rating":"Rating not available"
+"reviews":[
+0:"No reviews available"
+]
+"availability":"Availability not available"
+"description":"Description not available"
+}
 if st.button("Scrape Product Data", key="1"):
     scraped_data = scrape_single_url(webpage_url)
 
