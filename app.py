@@ -295,7 +295,14 @@ st.title("SHopy - Your Shopping Assistant")
 
 # Input for webpage URL
 webpage_url = st.text_input("Enter the URL of the webpage:")
-
+scraped_data = {
+                'title': "title_string",
+                'price': "price",
+                'rating': "rating",
+                'reviews': "reviews",
+                'availability': "available",
+                'description': "Description not available",
+            }
 if st.button("Scrape Product Data"):
     try:
         headers = {
