@@ -121,5 +121,4 @@ def main():
         
     st.text_area("Chat:", value="\n".join(st.session_state.chat_history), height=200)
 
-if _name_ == "_main_":
-    main()
+main()
