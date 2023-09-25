@@ -9,7 +9,7 @@ nltk.download('punkt')  # Download the punkt tokenizer data if not already downl
 
 # Function to display usage instructions in the sidebar
 def display_instructions():
-    st.sidebar.markdown(" NOTE: Since all generative AIs that are available on the internet were either paid or unusable in our required app, I was unable to make use of the generative AI to create more natural conversations with the bot. However the bot still works to provide the straightforward answers to our commands.")
+    st.sidebar.title(" NOTE: Since all generative AIs that are available on the internet were either paid or unusable in our required app, I was unable to make use of the generative AI to create more natural conversations with the bot. However the bot still works to provide the straightforward answers to our commands.")
     st.sidebar.title("Instructions")
     st.sidebar.markdown("1. Enter the product URL in the main section.")
     st.sidebar.markdown("2. Type your query or command in the 'You >>' text area.")
@@ -134,6 +134,14 @@ def main():
                     st.session_state.chat_history.append("Here is a summary of the reviews:")
                     st.session_state.chat_history.append(review_summary)
                 else:
+                    scraped_data = {
+                        'title': title_string,
+                        'price': price,
+                        'rating': rating,
+                        'availability': available,
+                        'reviews': reviews,
+                    }
+
                     st.success("Data successfully scraped!")
 
                     # Display only the title of the product under the "Scraped Product Data" section
