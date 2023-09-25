@@ -2,11 +2,15 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 import time
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+
+nltk.download('punkt')  # Download the punkt tokenizer data if not already downloaded
 
 # Function to display usage instructions in the sidebar
 def display_instructions():
-    st.sidebar.title("Instructions")
     st.sidebar.markdown(" NOTE: Since all generative AIs that are available on the internet were either paid or unusable in our required app, I was unable to make use of the generative AI to create more natural conversations with the bot. However the bot still works to provide the straightforward answers to our commands.")
+    st.sidebar.title("Instructions")
     st.sidebar.markdown("1. Enter the product URL in the main section.")
     st.sidebar.markdown("2. Type your query or command in the 'You >>' text area.")
     st.sidebar.markdown("3. Click the 'Send' button to get information.")
@@ -15,6 +19,34 @@ def display_instructions():
     st.sidebar.markdown("6. The assistant will respond with the requested information.")
     st.sidebar.markdown("7. You can have a conversation by typing sentences or asking questions.")
 
+# Function to summarize text
+def summarize_text(text, num_sentences):
+    sentences = sent_tokenize(text)
+    word_frequencies = {}
+
+    for sentence in sentences:
+        words = word_tokenize(sentence)
+        for word in words:
+            if word not in word_frequencies:
+                word_frequencies[word] = 1
+            else:
+                word_frequencies[word] += 1
+
+    sentence_scores = {}
+    for sentence in sentences:
+        for word in word_tokenize(sentence):
+            if word in word_frequencies:
+                if sentence not in sentence_scores:
+                    sentence_scores[sentence] = word_frequencies[word]
+                else:
+                    sentence_scores[sentence] += word_frequencies[word]
+
+    summary_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
+    summary = ' '.join(summary_sentences)
+
+    return summary
+
+# Main chatbot function
 def main():
     st.title("SHopy, your Shopping assistant :)")
     st.write("Give me the link for the product:")
@@ -93,15 +125,15 @@ def main():
                 if not reviews:
                     reviews = ["No reviews available"]  # Assign a default value if no reviews are found
 
-                if title_string:
-                    scraped_data = {
-                        'title': title_string,
-                        'price': price,
-                        'rating': rating,
-                        'availability': available,
-                        'reviews': reviews,
-                    }
+                if 'reviews' in st.session_state.user_input:
+                    # Summarize the reviews
+                    num_reviews_to_display = 5  # You can adjust this number as needed
+                    review_summary = summarize_text('\n'.join(reviews), num_reviews_to_display)
 
+                    # Display the review summary
+                    st.session_state.chat_history.append("Here is a summary of the reviews:")
+                    st.session_state.chat_history.append(review_summary)
+                else:
                     st.success("Data successfully scraped!")
 
                     # Display only the title of the product under the "Scraped Product Data" section
@@ -122,8 +154,6 @@ def main():
                     if not found_match:
                         st.session_state.chat_history.append("I'm sorry, I didn't understand your question. Could you please rephrase it?")
                         
-                else:
-                    st.error("Product title is not available.")
             else:
                 st.error(f"Failed to retrieve the Amazon page: {webpage_url}")
         except Exception as e:
